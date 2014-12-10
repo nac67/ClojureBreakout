@@ -7,3 +7,8 @@
 (def BALL "ball")
 (def BRICK "brick")
 (def PADDLE "paddle")
+
+(def G_WIDTH 800)
+(def G_HEIGHT 600)
+(def H_G_WIDTH 400)
+(def H_G_HEIGHT 300)
