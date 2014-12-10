@@ -1,27 +1,22 @@
 (ns breakout.core
   (:require [play-clj.core :refer :all]
             [play-clj.g2d :refer :all]
-            [breakout.collisions :as collisions]))
+            [breakout.collisions :as collisions]
+            [breakout.utils :as u]))
 
 (def ball_path "ball.png")
 (def brick_path "brick.png")
 (def paddle_path "paddle.png")
 
-; concatenates two vectors and returns a vector
-(defn concatV [v1 v2]
-  (into [] (concat v1 v2)))
+
+
 
 ; given x dimension and y dimension, outputs list of tuples in form
 ; [[0 0] [0 1] [0 2] [0 3] ... [1 0] [1 1] [1 2]...[x-1 y-1]]
-(defn gen2DCoords [x y]
-  (reduce 
-    (fn [acc elem]
-      (concatV acc (map (fn [e] [elem e]) (range x))))
-    []
-    (range y))) 
+
 
 (defn addBricks [entities]
-  (concatV entities 
+  (u/concatV entities 
      (map (fn [[x y]]
         (assoc (texture brick_path)
                :game-type "brick"
@@ -29,17 +24,16 @@
                :y (- 530 (* y 30))
                :w 60
                :h 20))
-        (gen2DCoords 5 6))))
+        (u/gen2DCoords 5 6))))
 
 (defn initGame []
   (-> [(assoc (texture ball_path) :game-type "ball" :x 400 :y 300 :vx 5 :vy 5 :w 20 :h 20)
        (assoc (texture paddle_path) :game-type "paddle" :x 400 :y 30 :w 100 :h 20)]
       (addBricks)))
 
-(defn outside? [num lower upper]
-  (or (< num lower)  (> num upper)))
+
   
-(defn inv [n] (* -1 n))
+
 
 (defn move [entity x y]
   (let [newX (+ (:x entity) x)
@@ -47,8 +41,8 @@
     (assoc entity :x newX :y newY)))
 
 (defn bounce [entity]
-  (let [newVx (if (outside? (:x entity) 0 800) (inv (:vx entity)) (:vx entity))
-        newVy (if (> (:y entity) 600) (inv (:vy entity)) (:vy entity))]
+  (let [newVx (if (u/outside? (:x entity) 0 800) (u/inv (:vx entity)) (:vx entity))
+        newVy (if (> (:y entity) 600) (u/inv (:vy entity)) (:vy entity))]
     (assoc entity :vx newVx :vy newVy)))
 
 (defn fallOffScreen [ball]
@@ -73,7 +67,7 @@
                        (assoc hitObject :destroyed true) ; mark brick as destroyed
                     :default
                         hitObject))) ; if object not a brick, leave it alone
-           ball (if collisions? (assoc ball :vy (inv (:vy ball))) ball)
+           ball (if collisions? (assoc ball :vy (u/inv (:vy ball))) ball)
            bricks (filter (fn [brick] (not (:destroyed brick))) bricks)]
       
       [ball bricks]))
@@ -83,7 +77,7 @@
   (let [newBall (updateBall ball)
         newPaddle (assoc paddle :x (- (:mouse-x screen) 40))
         [newBall2 newBricks] (processBreakoutCollisions newBall paddle bricks)]
-    (concatV [newBall2 newPaddle] newBricks)))
+    (u/concatV [newBall2 newPaddle] newBricks)))
 
 (defscreen main-screen
   :on-show
