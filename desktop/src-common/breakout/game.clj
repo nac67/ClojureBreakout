@@ -21,7 +21,8 @@
 
 (defn initGame []
   "Sets up and returns entities list"
-  (-> [(assoc (texture c/BALL_PATH) :game-type c/BALL :x c/H_G_WIDTH :y c/H_G_HEIGHT :vx 5 :vy 5 :w 20 :h 20)
+  (-> [(texture c/BG_PATH)
+       (assoc (texture c/BALL_PATH) :game-type c/BALL :x c/H_G_WIDTH :y c/H_G_HEIGHT :vx 5 :vy 5 :w 20 :h 20)
        (assoc (texture c/PADDLE_PATH) :game-type c/PADDLE :x c/H_G_WIDTH :y 30 :w 100 :h 20)]
       (addBricks 5 6)))
 
@@ -75,10 +76,10 @@
     
 ; Update
 
-(defn update [screen [ball paddle & bricks :as entities]]
+(defn update [screen [bg ball paddle & bricks :as entities]]
   "Main update loop
    updates ball movement, moves paddle, then processes collisions"
   (let [newBall (updateBall ball)
         newPaddle (assoc paddle :x (- (:mouse-x screen) (-> paddle (:w) (/ 2))))
         [newBall2 newBricks] (processBreakoutCollisions newBall paddle bricks)]
-    (u/concatV [newBall2 newPaddle] newBricks)))
+    (u/concatV [bg newBall2 newPaddle] newBricks)))

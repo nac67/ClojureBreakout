@@ -4,6 +4,7 @@
 (def BALL_PATH "ball.png")
 (def BRICK_PATH "brick.png")
 (def PADDLE_PATH "paddle.png")
+(def BG_PATH "background.png")
 
 ; for :game-type tag in entities
 (def BALL "ball")

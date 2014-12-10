@@ -41,6 +41,6 @@
     (fn [[accColl? accList] entity]
       (let [coll? (colliding? collider entity)
             entity (if coll? (collFcn entity) entity)]
-        [(or coll? accColl?) (conj accList entity)]))
+        [(or coll? accColl?) (cons entity accList)]))
     [false []]
-    listOfObjects))
+    (reverse listOfObjects)))
