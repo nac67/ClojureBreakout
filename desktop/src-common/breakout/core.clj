@@ -91,27 +91,26 @@
       an entity in listOfObjects in event of a collision
    
    returns [didCollisionOccur? newListOfObjects]"
-  (let [listOfObjects 
-          (map (fn [obj] 
-            (if (colliding? collider obj) 
-              (collFcn obj)
-                obj))
-            listOfObjects)
-        collisionOccured? (some (fn [obj] (colliding? collider obj)) listOfObjects)]
-    
-    [collisionOccured? listOfObjects]))
+  (reduce 
+    ; accumulator is whether a collision has occured yet, and newListOfObjects
+    (fn [[accColl? accList] entity]
+      (let [coll? (colliding? collider entity)
+            entity (if coll? (collFcn entity) entity)]
+        [(or coll? accColl?) (conj accList entity)]))
+    [false []]
+    listOfObjects))
     
 (defn processBreakoutCollisions [ball paddle bricks]
     (let [[collisions? [paddle & bricks]] 
-           (processCollisions 
-             ball 
-             (cons paddle bricks) ; collide ball against paddle or bricks
-             (fn [hitObject]
-                (cond
-                   (= (:game-type hitObject) "brick")
-                      (assoc hitObject :destroyed true) ; mark brick as destroyed
-                   :default
-                       hitObject))) ; if object not a brick, leave it alone
+            (processCollisions 
+              ball 
+              (cons paddle bricks) ; collide ball against paddle or bricks
+              (fn [hitObject]
+                 (cond
+                    (= (:game-type hitObject) "brick")
+                       (assoc hitObject :destroyed true) ; mark brick as destroyed
+                    :default
+                        hitObject))) ; if object not a brick, leave it alone
            ball (if collisions? (assoc ball :vy (inv (:vy ball))) ball)
            bricks (filter (fn [brick] (not (:destroyed brick))) bricks)]
       
