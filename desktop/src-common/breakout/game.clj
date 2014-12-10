@@ -79,7 +79,7 @@
 (defn update [screen [bg ball paddle & bricks :as entities]]
   "Main update loop
    updates ball movement, moves paddle, then processes collisions"
-  (let [newBall (updateBall ball)
-        newPaddle (assoc paddle :x (- (:mouse-x screen) (-> paddle (:w) (/ 2))))
-        [newBall2 newBricks] (processBreakoutCollisions newBall paddle bricks)]
-    (u/concatV [bg newBall2 newPaddle] newBricks)))
+  (let [ball (updateBall ball)
+        paddle (assoc paddle :x (- (:mouse-x screen) (-> paddle (:w) (/ 2))))
+        [ball bricks] (processBreakoutCollisions ball paddle bricks)]
+    (u/concatV [bg ball paddle] bricks)))
