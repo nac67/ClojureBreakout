@@ -75,30 +75,53 @@
         cond3 (< y2 (+ y1 h1))
         cond4 (< y1 (+ y2 h2))]
     (and cond1 cond2 cond3 cond4)))
+
+
+(defn processCollisions [collider listOfObjects collFcn]
+  "Runs a collision check between collider entity and a list
+   of entities called listOfObjects. If there is a collision,
+   it will call collFcn on the entity in listOfObjects. It will return
+   [collision? newListOfObjects] where collision? is whether any collision
+   occured, and newListOfObjects is the list with collFcn applied to collied
+   objects.
+
+   collider - entity to run against all other entities
+   listOfObjects - list of entities to be tested against
+   collFcn - function of form (fn [entity] ...) which will be called on 
+      an entity in listOfObjects in event of a collision
+   
+   returns [didCollisionOccur? newListOfObjects]"
+  (let [listOfObjects 
+          (map (fn [obj] 
+            (if (colliding? collider obj) 
+              (collFcn obj)
+                obj))
+            listOfObjects)
+        collisionOccured? (some (fn [obj] (colliding? collider obj)) listOfObjects)]
     
-; TODO make a generic processCollisions function that
-; takes in an object, and a list of other objects
-; it should also take in a function
-; if a collision is detected, it runs this function on the object in the list
-; it returns true if there was a collision, and it returns the new list with
-; the functions applied to those who were collided
-(defn processCollisions [ball paddle bricks]
-    (let [bricks (map (fn [brick] 
-                        (if (colliding? ball brick) 
-                          (assoc brick :destroyed true) 
-                          brick))
-                      bricks)
-          bounce (some (fn [brick] (colliding? ball brick)) bricks)
-          bounce (or bounce (colliding? ball paddle))
-          newVy (if bounce (inv (:vy ball)) (:vy ball))]
-       
-    [(assoc ball :vy newVy)
-     (filter (fn [brick] (not (:destroyed brick))) bricks)]))
+    [collisionOccured? listOfObjects]))
+    
+(defn processBreakoutCollisions [ball paddle bricks]
+    (let [[collisions? [paddle & bricks]] 
+           (processCollisions 
+             ball 
+             (cons paddle bricks) ; collide ball against paddle or bricks
+             (fn [hitObject]
+                (cond
+                   (= (:game-type hitObject) "brick")
+                      (assoc hitObject :destroyed true) ; mark brick as destroyed
+                   :default
+                       hitObject))) ; if object not a brick, leave it alone
+           ball (if collisions? (assoc ball :vy (inv (:vy ball))) ball)
+           bricks (filter (fn [brick] (not (:destroyed brick))) bricks)]
+      
+      [ball bricks]))
+    
 
 (defn update [screen [ball paddle & bricks :as entities]]
   (let [newBall (updateBall ball)
         newPaddle (assoc paddle :x (- (:mouse-x screen) 40))
-        [newBall2 newBricks] (processCollisions newBall paddle bricks)]
+        [newBall2 newBricks] (processBreakoutCollisions newBall paddle bricks)]
     (concatV [newBall2 newPaddle] newBricks)))
 
 (defscreen main-screen
