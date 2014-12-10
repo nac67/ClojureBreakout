@@ -2,24 +2,15 @@
   (:require [play-clj.core :refer :all]
             [play-clj.g2d :refer :all]
             [breakout.collisions :as collisions]
-            [breakout.utils :as u]))
-
-(def ball_path "ball.png")
-(def brick_path "brick.png")
-(def paddle_path "paddle.png")
-
-
-
-
-; given x dimension and y dimension, outputs list of tuples in form
-; [[0 0] [0 1] [0 2] [0 3] ... [1 0] [1 1] [1 2]...[x-1 y-1]]
+            [breakout.utils :as u]
+            [breakout.constants :as c]))
 
 
 (defn addBricks [entities]
   (u/concatV entities 
      (map (fn [[x y]]
-        (assoc (texture brick_path)
-               :game-type "brick"
+        (assoc (texture c/BRICK_PATH)
+               :game-type c/BRICK
                :x (+ (* x 70) 200)
                :y (- 530 (* y 30))
                :w 60
@@ -27,8 +18,8 @@
         (u/gen2DCoords 5 6))))
 
 (defn initGame []
-  (-> [(assoc (texture ball_path) :game-type "ball" :x 400 :y 300 :vx 5 :vy 5 :w 20 :h 20)
-       (assoc (texture paddle_path) :game-type "paddle" :x 400 :y 30 :w 100 :h 20)]
+  (-> [(assoc (texture c/BALL_PATH) :game-type c/BALL :x 400 :y 300 :vx 5 :vy 5 :w 20 :h 20)
+       (assoc (texture c/PADDLE_PATH) :game-type c/PADDLE :x 400 :y 30 :w 100 :h 20)]
       (addBricks)))
 
 
@@ -63,7 +54,7 @@
               (cons paddle bricks) ; collide ball against paddle or bricks
               (fn [hitObject]
                  (cond
-                    (= (:game-type hitObject) "brick")
+                    (= (:game-type hitObject) c/BRICK)
                        (assoc hitObject :destroyed true) ; mark brick as destroyed
                     :default
                         hitObject))) ; if object not a brick, leave it alone
