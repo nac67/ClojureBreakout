@@ -69,6 +69,8 @@
     
 (defn processBreakoutCollisions [ball paddle bricks]
   "bounces ball off objects and removes bricks once hit"
+  ; upon return of processCollisions, deconstruct the vector to get paddle as
+  ; first element and the rest are bricks
   (let [[collisions? [paddle & bricks]] 
           (collisions/processCollisions 
             ball 
@@ -85,7 +87,9 @@
     [ball bricks]))
     
 ; Update
-
+; takeaways, never pass entirety of entities to helper functions,
+; because then they have to remember not to forget ordering and existence 
+; of objects
 (defn update [screen [bg ball paddle & bricks :as entities]]
   "Main update loop
    updates ball movement, moves paddle, then processes collisions"
