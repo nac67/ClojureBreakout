@@ -16,4 +16,5 @@
 (defn inv [n] (* -1 n))
 
 (defn outside? [num lower upper]
+  "checks if num is outside of range [lower..upper]"
   (or (< num lower)  (> num upper)))

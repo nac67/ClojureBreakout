@@ -1,6 +1,11 @@
 (ns breakout.collisions)
 
 (defn colliding? [e1 e2]
+  "performs rectangle collision between e1 and e2
+   :x - x position of corner
+   :y - y position of corner
+   :w - width of entity
+   :h - height of entity"
   (let [x1 (:x e1)
         x2 (:x e2)
         y1 (:y e1)
