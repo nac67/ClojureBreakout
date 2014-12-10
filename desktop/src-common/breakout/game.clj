@@ -22,8 +22,14 @@
 (defn initGame []
   "Sets up and returns entities list"
   (-> [(texture c/BG_PATH)
-       (assoc (texture c/BALL_PATH) :game-type c/BALL :x c/H_G_WIDTH :y c/H_G_HEIGHT :vx 5 :vy 5 :w 20 :h 20)
-       (assoc (texture c/PADDLE_PATH) :game-type c/PADDLE :x c/H_G_WIDTH :y 30 :w 100 :h 20)]
+       (assoc (texture c/BALL_PATH) 
+              :game-type c/BALL 
+              :x c/H_G_WIDTH 
+              :y c/H_G_HEIGHT 
+              :vx 5 :vy 5 :w 20 :h 20)
+       (assoc (texture c/PADDLE_PATH) 
+              :game-type c/PADDLE 
+              :x c/H_G_WIDTH :y 30 :w 100 :h 20)]
       (addBricks 5 6)))
 
 ; BALL MOVEMENT
@@ -37,8 +43,12 @@
 
 (defn bounce [entity]
   "bounce entity off top left and right walls by reversing velocity"
-  (let [newVx (if (u/outside? (:x entity) 0 c/G_WIDTH) (u/inv (:vx entity)) (:vx entity))
-        newVy (if (> (:y entity) c/G_HEIGHT) (u/inv (:vy entity)) (:vy entity))]
+  (let [newVx (if (u/outside? (:x entity) 0 (- c/G_WIDTH (:w entity))) 
+                (u/inv (:vx entity)) 
+                (:vx entity))
+        newVy (if (> (:y entity) (- c/G_HEIGHT (:h entity))) 
+                (u/inv (:vy entity)) 
+                (:vy entity))]
     (assoc entity :vx newVx :vy newVy)))
 
 
