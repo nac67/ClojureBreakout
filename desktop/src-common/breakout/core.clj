@@ -7,6 +7,8 @@
   :on-show
   (fn [screen entities]
     (update! screen :renderer (stage))
+    (update! screen :mouse-x 0)
+    (update! screen :mouse-y 0)
     (game/initGame))
   
   :on-render

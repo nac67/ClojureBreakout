@@ -96,4 +96,4 @@
   (let [ball (updateBall ball)
         paddle (assoc paddle :x (- (:mouse-x screen) (-> paddle (:w) (/ 2))))
         [ball bricks] (processBreakoutCollisions ball paddle bricks)]
-    (u/concatV [bg ball paddle] bricks)))
+    (u/concatV [bg ball  paddle] bricks)))
